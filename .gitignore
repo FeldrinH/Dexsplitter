@@ -1,0 +1,7 @@
+*.png
+!reference_digits.png
+
+*.webm
+*.mp4
+
+*.tsv
