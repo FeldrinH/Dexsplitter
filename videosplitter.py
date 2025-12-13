@@ -34,15 +34,23 @@ def locate_timecode_bounds(frame: np.ndarray):
     timecode_area_left, timecode_area_right = round(0.25 * width), round(0.75 * width)
     timecode_area = frame[timecode_area_top:timecode_area_bottom, timecode_area_left:timecode_area_right]
 
-    cv2.imwrite('timecode_area.png', timecode_area)
+    # cv2.imwrite('timecode_area.png', timecode_area)
 
     FOREGROUND_THRESHOLD = 26
 
-    horizontal_averages = np.mean(timecode_area, axis=(0, 2))
-    horizontal_transitions = [v + timecode_area_left for v in transitions(horizontal_averages >= FOREGROUND_THRESHOLD)]
-    
     vertical_averages = np.mean(timecode_area, axis=(1, 2))
-    vertical_transitions = [v + timecode_area_top for v in transitions(vertical_averages >= FOREGROUND_THRESHOLD)]
+    vertical_transitions = transitions(vertical_averages >= FOREGROUND_THRESHOLD)
+
+    if vertical_transitions[1] - vertical_transitions[0] <= 4 or vertical_transitions[3] - vertical_transitions[2] <= 4:
+        # Bad frame for timecode bounds detection, probably CRT scan effect is moving over the timecodes
+        return None, None
+
+    horizontal_averages_area = timecode_area[vertical_transitions[0]:vertical_transitions[3], :]
+    horizontal_averages = np.mean(horizontal_averages_area, axis=(0, 2))
+    horizontal_transitions = transitions(horizontal_averages >= FOREGROUND_THRESHOLD)
+
+    horizontal_transitions = [v + timecode_area_left for v in horizontal_transitions]
+    vertical_transitions = [v + timecode_area_top for v in vertical_transitions]
     
     timecode_bounds_upper = (
         slice(vertical_transitions[0] - 4, vertical_transitions[1] + 4),
@@ -58,18 +66,18 @@ def locate_timecode_bounds(frame: np.ndarray):
 def extract_timecode(timecode: np.ndarray):
     """Extract timecode from frame cropped to timecode bounds"""
 
-    cv2.imwrite('timecode.png', timecode)
+    # cv2.imwrite('timecode.png', timecode)
     
     # Merge color channels and apply thresholding to simplify processing
     timecode = np.mean(timecode, axis=2)
     base_threshold = np.mean(timecode)
 
-    for threshold in np.arange(base_threshold, base_threshold + 40):
+    for threshold in np.arange(base_threshold + 5, base_threshold + 40):
         timecode_thresholded = timecode >= threshold
 
         # Try to remove borders if they exist
         # TODO: The border detection really needs a redesign. This logic is broken, it just hasn't failed catastrophically yet.
-        for i in range(1, 6):
+        for i in range(1, 7):
             if np.count_nonzero(timecode_thresholded[i, :]) < 5:
                 timecode_thresholded[:i, :] = 0
             if np.count_nonzero(timecode_thresholded[-i, :]) < 5:
@@ -79,7 +87,7 @@ def extract_timecode(timecode: np.ndarray):
             if np.count_nonzero(timecode_thresholded[:, -i]) < 5:
                 timecode_thresholded[:, -i:] = 0
         
-        cv2.imwrite(f'timecode_thresholded.png', 255 * timecode_thresholded)
+        # cv2.imwrite(f'timecode_thresholded.png', 255 * timecode_thresholded)
 
         vertical_transitions = transitions(np.max(timecode_thresholded, axis=1))
         if len(vertical_transitions) < 2:
@@ -123,6 +131,8 @@ def extract_digit_nn(digit: np.ndarray):
 
     for xl, xr, yl, yr in itertools.product(range(2), repeat=4):        
         digit_cropped = digit[xl:digit.shape[0] - xr, yl:digit.shape[1] - yr]
+        if digit_cropped.size == 0:
+            break
         digit_cropped = cv2.resize(digit_cropped, (25, 34), interpolation=cv2.INTER_NEAREST)
         
         for value, reference_digit in enumerate(REFERENCE_DIGITS):
@@ -140,7 +150,7 @@ def extract_digit_nn(digit: np.ndarray):
     
     # digest = hashlib.sha256((255 * digit).astype(np.uint8).tobytes()).hexdigest()
     # Path(f'digits_dump/{best_value}').mkdir(parents=True, exist_ok=True)
-    # cv2.imwrite(f'digits_dump/{best_value}/{digest[:8]}.png', 255 * digit)
+    # cv2.imwrite(f'digits_dump/{best_value}/{digest[:8]}_{best_difference:.0f}.png', 255 * digit)
     
     return best_value
 
@@ -174,6 +184,7 @@ if __name__ == '__main__':
     
     level = 0
     timecode_start = Timecode(0, 0, 0, 0)
+    timecode_end = Timecode(0, 0, 0, 0)
     in_transition = True
     in_final_level = False
 
@@ -184,8 +195,10 @@ if __name__ == '__main__':
         if not success:
             break
 
+        frame_cropped = frame[-150:, :900]
+
         # NB: OpenCV uses BGR color space for some reason, so we need to reorder the channels to get correct hue.
-        average_blue, average_green, average_red = np.mean(frame[-150:, :900], axis=(0, 1)) / 255.0 # type: ignore
+        average_blue, average_green, average_red = np.mean(frame_cropped, axis=(0, 1)) / 255.0 # type: ignore
         average_hue, average_saturation, average_value = colorsys.rgb_to_hsv(average_red, average_green, average_blue)
 
         timecode_seconds = video_capture.get(cv2.CAP_PROP_POS_MSEC) / 1000
@@ -194,7 +207,15 @@ if __name__ == '__main__':
         new_in_credits = 0.55 < average_hue < 0.75 and average_saturation > 0.8 and average_value < 0.1
         new_in_final_level = (average_hue < 0.2 or average_hue > 0.95) and average_saturation > 0.5 and average_value > 0.1
 
-        # print(f"{timecode_seconds:.3f}   {average_hue:.5f} {average_saturation:.5f} {average_value:.5f}   {new_in_transition} {new_in_credits} {new_in_final_level}")
+        # if level > 100:
+        #     print(f"{timecode_seconds:.3f}   {average_hue:.5f} {average_saturation:.5f} {average_value:.5f}   {new_in_transition} {new_in_credits} {new_in_final_level}")
+
+        if new_in_credits:
+            # Sometimes tower background gets detected as credits sky. To correct this we check the timecode average color.
+            average_blue, average_green, average_red = np.mean(frame[timecode_bounds_upper], axis=(0, 1)) / 255.0 # type: ignore
+            _, average_saturation, _ = colorsys.rgb_to_hsv(average_red, average_green, average_blue)
+            if average_saturation > 0.2:
+                new_in_credits = False
         
         if (new_in_transition and not in_transition) or (new_in_final_level and not in_final_level) or new_in_credits:
             # End of current level, three possible cases:
@@ -202,11 +223,13 @@ if __name__ == '__main__':
             # - Start of final level (no level transition screen)
             # - Start of credits
 
-            cv2.imwrite('frame_cropped.png', frame[-150:, :900])
+            # cv2.imwrite('frame_cropped.png', frame_cropped)
 
             if timecode_bounds_upper is None or timecode_bounds_lower is None:
-                cv2.imwrite('timecode_bounds_frame.png', frame)
                 timecode_bounds_upper, timecode_bounds_lower = locate_timecode_bounds(frame)
+                if not timecode_bounds_upper or not timecode_bounds_lower:
+                    print("WARNING: Failed to detect timecode bounds. Skipping to next frame...")
+                    continue
             
             if new_in_final_level and not in_final_level:
                 timecode_area_end = 255 - frame[timecode_bounds_upper]
@@ -231,12 +254,15 @@ if __name__ == '__main__':
             # Note: If timecode bounds are unknown then we are in the first level.
             # We skip it because timecode bounds are unknown and the timecode is always 0:00:00:000 anyways.
 
-            cv2.imwrite('frame_cropped.png', frame[-150:, :900])
+            # cv2.imwrite('frame_cropped.png', frame_cropped)
 
             timecode_area_start = 255 - frame[timecode_bounds_upper]
             timecode_start = extract_timecode(timecode_area_start)
             
             level += 1
+
+            if timecode_start.total_milliseconds() < timecode_end.total_milliseconds():
+                raise AssertionError("Out of order timecodes")
         
         if new_in_credits:
             # End of game
