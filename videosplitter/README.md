@@ -1,6 +1,4 @@
-# Dexsplitter
-
-Script to generate splits (start and end timecodes for segments) from a recording of an Ambidextro speedrun.
+Python script to generate splits (start and end timecodes for segments) from a recording of an Ambidextro speedrun.
 
 ## Installation
 
