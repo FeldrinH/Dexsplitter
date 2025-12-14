@@ -3,8 +3,7 @@
 if __name__ == '__main__':
     sections = []
     
-    sections.append("""
-<?xml version="1.0" encoding="UTF-8"?>
+    sections.append("""<?xml version="1.0" encoding="UTF-8"?>
 <Run version="1.7.0">
   <GameIcon />
   <GameName>Ambidextro</GameName>
