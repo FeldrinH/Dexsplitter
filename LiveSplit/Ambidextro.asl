@@ -8,6 +8,9 @@ state("Ambidextro")
     // Internal time of speedrun timer. Updates every frame while in game. Zero while in menus. 
     double speedrunTime : 0x04FF5AA0, 0x2B0, 0x150, 0x18, 0x68, 0x28, 0x158;
 
+    // True if game has been completed. Set to true at end of final level.
+    bool gameEnded : 0x04FF5AA0, 0x2B0, 0x150, 0x18, 0x68, 0x28, 0x188;
+
     // Updates at end of level. Has next level index during level transition.
     long level : 0x04FF5AA0, 0x288, 0x0, 0x68, 0x28, 0x140;
     
@@ -52,6 +55,5 @@ split
         // Avoid splitting immediately at start of run.
         return;
     }
-    // TODO: Does final level need special handling?
-    return current.level != old.level;
+    return current.level != old.level || (current.level == 101 && current.gameEnded && !old.gameEnded);
 }
