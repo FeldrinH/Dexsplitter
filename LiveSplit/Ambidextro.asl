@@ -8,6 +8,8 @@ state("Ambidextro")
     
     // Updates at start of level. Has previous level index during level transition.
     long levelLoaded : 0x04FF5AA0, 0x288, 0x0, 0x68, 0x28, 0x158;
+
+    // TODO: level and levelLoaded are broken for TAS, probably because of the patching that TAS does.
 }
 
 startup
