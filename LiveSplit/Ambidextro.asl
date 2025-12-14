@@ -1,3 +1,5 @@
+// NB: The location of this file in the repository must not change. This location is linked to from https://github.com/LiveSplit/LiveSplit.AutoSplitters.
+
 state("Ambidextro")
 {
     // Internal time of speedrun timer. Updates every frame while in game. Zero while in menus. 
