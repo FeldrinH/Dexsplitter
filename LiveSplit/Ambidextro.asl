@@ -1,3 +1,6 @@
+// Copyright (c) 2025 Juhan Oskar Hennoste (FeldrinH)
+// Licensed under MIT License (https://spdx.org/licenses/MIT.html)
+
 // NB: The location of this file in the repository must not change. This location is linked to from https://github.com/LiveSplit/LiveSplit.AutoSplitters.
 
 state("Ambidextro")
