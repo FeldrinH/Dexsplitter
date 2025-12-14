@@ -6,7 +6,7 @@ This repo contains splits and splitters for speedrunning the game Ambidextro.
 
 The `LiveSplit` folder contains a LiveSplit autosplitter for Ambidextro and splits for running the Any% category.
 
-You can download the splits for the Any% category <a href="https://github.com/FeldrinH/Dexsplitter/blob/main/LiveSplit/Ambidextro%20-%20Any%25.lss?raw=true" download>here</a>. The autosplitter will be automatically downloaded when opening the splits in LiveSplit. You can enable it by opening the 'Edit Splits' window and clicking the button labeled 'Activate'.
+You can download the splits for the Any% category <a href="https://github.com/FeldrinH/Dexsplitter/blob/main/LiveSplit/Ambidextro%20-%20Any%25.lss?raw=true" download="test.txt">here</a>. The autosplitter will be automatically downloaded when opening the splits in LiveSplit. You can enable it by opening the 'Edit Splits' window and clicking the button labeled 'Activate'.
 
 The autosplitter has the following features:
 
