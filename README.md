@@ -1,10 +1,18 @@
 # Dexsplitter
 
-This repo contains splits and splitters for the game Ambidextro.
+This repo contains splits and splitters for speedrunning the game Ambidextro.
 
 ## LiveSplit autosplitter
 
-*Work in progress.*
+The `LiveSplit` folder contains a LiveSplit autosplitter for Ambidextro and splits for running the Any% category.
+
+You can download the splits for the Any% category <a href="https://github.com/FeldrinH/Dexsplitter/blob/main/LiveSplit/Ambidextro%20-%20Any%25.lss?raw=true" download>here</a>. The autosplitter will be automatically downloaded when opening the splits in LiveSplit. You can enable it by opening the 'Edit Splits' window and clicking the button labeled 'Activate'.
+
+The autosplitter has the following features:
+
+* Automatically splits at the end of a level (before the level transition, if there is one).
+* Automatically starts run when speedrun timer starts ticking.
+* Automatically resets run when (re)starting level 0.
 
 ## Video splitter
 
