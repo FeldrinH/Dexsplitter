@@ -1,5 +1,7 @@
 analysis/
-testing/
+
+*.lss
+*.lsl
 
 *.png
 !reference_digits.png
