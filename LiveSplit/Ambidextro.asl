@@ -26,7 +26,7 @@ startup
     if (timer.CurrentTimingMethod != TimingMethod.GameTime)
     {
         DialogResult timingPromptResult = MessageBox.Show(
-            "This game uses Game Time (in-game timer) as the main timing method.\n" +
+            "This game uses the in-game timer (Game Time) as the main timing method.\n" +
             "Would you like to switch the timing method to Game Time?",
             "LiveSplit | Ambidextro",
             MessageBoxButtons.YesNo, MessageBoxIcon.Question
