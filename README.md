@@ -4,7 +4,7 @@ This repo contains splits and splitters for speedrunning the game Ambidextro.
 
 ## LiveSplit autosplitter
 
-A LiveSplit autosplitter for Ambidextro can be found in the `LiveSplit` folder.
+A LiveSplit autosplitter for Ambidextro can be found in the `LiveSplit` folder. This autosplitter is registered with LiveSplit, so it is installed automatically when you select Ambidextro as the game for your splits and click 'Activate'.
 
 You can download splits for the Any% category on [speedrun.com](https://www.speedrun.com/Ambidextro/resources/55lo9).
 
