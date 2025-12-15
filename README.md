@@ -8,6 +8,8 @@ A LiveSplit autosplitter for Ambidextro can be found in the `LiveSplit` folder.
 
 You can download splits for the Any% category on [speedrun.com](https://www.speedrun.com/Ambidextro/resources/55lo9).
 
+The autosplitter has the following features:
+
 * Reads in-game speedrun timer for the most accurate time (make sure that LiveSplit is set to use game time).
 * Automatically splits at the end of a level (before the level transition, if there is one).
 * Automatically starts run when speedrun timer starts ticking.
