@@ -15,6 +15,8 @@ The autosplitter has the following features:
 * Automatically starts run when speedrun timer starts ticking.
 * Automatically resets run when (re)starting level 0.
 
+Note that the autosplitter is tested with Ambidextro 1.2.3 on Windows. Other versions of the game may work and support can be added on demand if they don't. Other operating systems do not work and support is currently not planned.
+
 ## Video splitter
 
 A Python script to extract split times from a speedrun video can be found in the `videosplitter` folder.
