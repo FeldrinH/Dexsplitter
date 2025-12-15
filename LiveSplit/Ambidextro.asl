@@ -22,7 +22,20 @@ state("Ambidextro")
 
 startup
 {
-    // refreshRate = 2;
+    // Based on https://github.com/ItsMaximum/autosplitters/blob/master/rb1improved.asl
+    if (timer.CurrentTimingMethod != TimingMethod.GameTime)
+    {
+        DialogResult timingPromptResult = MessageBox.Show(
+            "This game uses in-game timer (Game Time) as the main timing method. LiveSplit is currently set to use Real Time.\n" +
+            "Would you like to set the timing method to Game Time?",
+            "LiveSplit | Ambidextro",
+            MessageBoxButtons.YesNo, MessageBoxIcon.Question
+        );
+        if (timingPromptResult == DialogResult.Yes)
+        {
+            timer.CurrentTimingMethod = TimingMethod.GameTime;
+        }
+    }
 }
 
 gameTime
