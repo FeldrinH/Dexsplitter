@@ -59,7 +59,7 @@ isLoading
 
 start
 {
-    return current.inStoryMode && current.speedrunTime > 0.0;
+    return current.inStoryMode && current.level == 0 && current.speedrunTime > 0.0 && current.speedrunTime <= 0.5;
 }
 
 reset
