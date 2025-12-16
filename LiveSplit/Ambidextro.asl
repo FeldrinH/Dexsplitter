@@ -8,6 +8,9 @@ state("Ambidextro")
     // Internal time of speedrun timer. Updates every frame while in game. Zero while in menus. 
     double speedrunTime : 0x04FF5AA0, 0x2B0, 0x150, 0x18, 0x68, 0x28, 0x158;
 
+    // True if playing in story mode. False if playing individual levels.
+    bool inStoryMode : 0x04FF5AA0, 0x2B0, 0x150, 0x18, 0x68, 0x28, 0x170;
+
     // True if game has been completed. Set to true at end of final level.
     bool gameEnded : 0x04FF5AA0, 0x2B0, 0x150, 0x18, 0x68, 0x28, 0x188;
 
@@ -15,7 +18,7 @@ state("Ambidextro")
     long level : 0x04FF5AA0, 0x288, 0x0, 0x68, 0x28, 0x140;
     
     // Updates at start of level. Has previous level index during level transition.
-    long levelLoaded : 0x04FF5AA0, 0x288, 0x0, 0x68, 0x28, 0x158;
+    // long levelLoaded : 0x04FF5AA0, 0x288, 0x0, 0x68, 0x28, 0x158;
 
     // TODO: level and levelLoaded are broken for TAS, probably because of the patching that TAS does.
 }
@@ -40,6 +43,11 @@ startup
 
 gameTime
 {
+    if (!current.inStoryMode)
+    {
+        // Timer can sometimes start ticking unexpectedly outside story mode. Default to zero to avoid issues.
+        return TimeSpan.Zero;
+    }
     // Note: We use this conversion instead of FromSeconds so that we can match the rounding behavior of the in-game timer.
     return TimeSpan.FromMilliseconds((long)(current.speedrunTime * 1000.0));
 }
@@ -51,21 +59,21 @@ isLoading
 
 start
 {
-    return current.speedrunTime > 0.0;
+    return current.inStoryMode && current.speedrunTime > 0.0;
 }
 
 reset
 {
     // TODO: Do we need an extra check to avoid resetting when returning to main menu?
     // Currently this is prevented by the fact that level number is preserved when returning to main menu, but should we rely on this?
-    return current.level == 0 && current.speedrunTime == 0.0;
+    return current.inStoryMode && current.level == 0 && current.speedrunTime == 0.0;
 }
 
 split
 {
-    if (current.speedrunTime < 0.1)
+    if (!current.inStoryMode || current.speedrunTime < 0.1)
     {
-        // Avoid splitting immediately at start of run.
+        // Avoid splitting when playing outside story mode and when run has just started.
         return;
     }
     return current.level != old.level || (current.level == 101 && current.gameEnded && !old.gameEnded);
