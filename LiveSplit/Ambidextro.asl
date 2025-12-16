@@ -64,8 +64,9 @@ start
 
 reset
 {
-    // TODO: Do we need an extra check to avoid resetting when returning to main menu?
-    // Currently this is prevented by the fact that level number is preserved when returning to main menu, but should we rely on this?
+    // TODO: Do we need an extra check to avoid resetting when in main menu?
+    // Currently this is (mostly) prevented by the fact that level number is preserved
+    // when returning to main menu, but for a freshly started game the level number is 0 by default.
     return current.inStoryMode && current.level == 0 && current.speedrunTime == 0.0;
 }
 
