@@ -59,7 +59,7 @@ isLoading
 
 start
 {
-    // Start is triggered after time has gone from zero to positive. This ensures that start is tiggered after reset.
+    // Start is triggered after time has gone from zero to positive. This ensures that start is triggered after reset.
     return current.inStoryMode && current.level == 0 && old.speedrunTime > 0.0 && current.speedrunTime > 0.0 && current.speedrunTime <= 0.5;
 }
 
