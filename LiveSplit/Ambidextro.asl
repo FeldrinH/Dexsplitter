@@ -65,6 +65,7 @@ start
 
 reset
 {
+    // Reset is triggered when time goes from zero to positive. This ensures that reset is not triggered in main menu where time is zero by default.
     return current.inStoryMode && current.level == 0 && old.speedrunTime == 0.0 && current.speedrunTime > 0.0 && current.speedrunTime <= 0.5;
 }
 
