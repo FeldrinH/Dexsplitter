@@ -59,13 +59,15 @@ isLoading
 
 start
 {
-    // Start is triggered after time has gone from zero to positive. This ensures that start is triggered after reset.
-    return current.inStoryMode && current.level == 0 && old.speedrunTime > 0.0 && current.speedrunTime > 0.0 && current.speedrunTime <= 0.5;
+    // Start is triggered at the start of a run when the timer starts ticking.
+    // Note: Start is first triggered on the same frame as reset. This works out because LiveSplit runs the reset hook before the start hook.
+    return current.inStoryMode && current.level == 0 && current.speedrunTime > 0.0 && current.speedrunTime <= 0.5;
 }
 
 reset
 {
-    // Reset is triggered when time goes from zero to positive. This ensures that reset is not triggered in main menu where time is zero by default.
+    // Reset is triggered at the start of a run when the timer starts ticking.
+    // Note: Unlike start, reset is triggered only on the first frame where the timer starts ticking. This prevents repeated starting and resetting at the start of a run.
     return current.inStoryMode && current.level == 0 && old.speedrunTime == 0.0 && current.speedrunTime > 0.0 && current.speedrunTime <= 0.5;
 }
 
