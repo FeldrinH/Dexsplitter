@@ -71,7 +71,7 @@ reset
 
 split
 {
-    if (!current.inStoryMode || current.speedrunTime <= 0.1)
+    if (!current.inStoryMode || current.speedrunTime <= 0.2)
     {
         // Avoid splitting when playing outside story mode and when run has just started.
         return;
