@@ -59,21 +59,18 @@ isLoading
 
 start
 {
-    return current.inStoryMode && current.level == 0 && current.speedrunTime > 0.0 && current.speedrunTime <= 0.5;
+    // Start is triggered after time has gone from zero to positive. This ensures that start is tiggered after reset.
+    return current.inStoryMode && current.level == 0 && old.speedrunTime > 0.0 && current.speedrunTime > 0.0 && current.speedrunTime <= 0.5;
 }
 
 reset
 {
-    // TODO: Do we need an extra check to avoid resetting when in main menu?
-    // Currently this is (mostly) prevented by the fact that level number is preserved when returning to main menu 
-    // and story mode flag is false when initially in the main menu, but if you start a run and then quit on level 0,
-    // you will have both variables in the correct state and it will trigger a reset as long as you are in main menu.
-    return current.inStoryMode && current.level == 0 && current.speedrunTime == 0.0;
+    return current.inStoryMode && current.level == 0 && old.speedrunTime == 0.0 && current.speedrunTime > 0.0 && current.speedrunTime <= 0.5;
 }
 
 split
 {
-    if (!current.inStoryMode || current.speedrunTime < 0.1)
+    if (!current.inStoryMode || current.speedrunTime <= 0.1)
     {
         // Avoid splitting when playing outside story mode and when run has just started.
         return;
