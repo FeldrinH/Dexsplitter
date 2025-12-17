@@ -65,8 +65,9 @@ start
 reset
 {
     // TODO: Do we need an extra check to avoid resetting when in main menu?
-    // Currently this is (mostly) prevented by the fact that level number is preserved
-    // when returning to main menu, but for a freshly started game the level number is 0 by default.
+    // Currently this is (mostly) prevented by the fact that level number is preserved when returning to main menu 
+    // and story mode flag is false when initially in the main menu, but if you start a run and then quit on level 0,
+    // you will have both variables in the correct state and it will trigger a reset as long as you are in main menu.
     return current.inStoryMode && current.level == 0 && current.speedrunTime == 0.0;
 }
 
